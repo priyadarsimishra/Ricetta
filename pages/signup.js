@@ -1,14 +1,30 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import { Heading, Input, Box, Button } from "@chakra-ui/react";
-import { auth, provider } from "../firebase";
+import { auth, storage } from "../firebase";
 
 const signup = () => {
-  const [currUser, setCurrUser] = useState();
+  const [currUser, setCurrUser] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const router = useRouter();
 
-  const createUser = (username, email, password) => {
-    auth.createUserWithEmailAndPassword(email, password).then((data) => {
-      console.log(data);
-    });
+  const createUser = () => {
+    auth
+      .createUserWithEmailAndPassword(currUser.email, currUser.password)
+      .then((data) => {
+        setCurrUser({ username: "", email: "", password: "" });
+        const user = auth.currentUser;
+        user.updateProfile({ displayName: currUser.username });
+        let db = storage.collection("users").doc(user.uid);
+        db.set({
+          username: currUser.username,
+          email: currUser.email,
+        });
+        router.push("/home");
+      });
   };
 
   return (
@@ -17,13 +33,13 @@ const signup = () => {
       <Box p="3">
         <Input
           placeholder="Username"
-          value={currUser?.username}
+          value={currUser.username}
           width="15%"
           onChange={(evt) =>
             setCurrUser({
               username: evt.target.value,
-              email: currUser?.email,
-              password: currUser?.password,
+              email: currUser.email,
+              password: currUser.password,
             })
           }
         />
@@ -31,13 +47,13 @@ const signup = () => {
       <Box p="3">
         <Input
           placeholder="Email"
-          value={currUser?.email}
+          value={currUser.email}
           width="15%"
           onChange={(evt) =>
             setCurrUser({
-              username: currUser?.username,
+              username: currUser.username,
               email: evt.target.value,
-              password: currUser?.password,
+              password: currUser.password,
             })
           }
         />
@@ -45,25 +61,19 @@ const signup = () => {
       <Box p="3">
         <Input
           placeholder="Password"
-          value={currUser?.password}
+          value={currUser.password}
           width="15%"
           onChange={(evt) =>
             setCurrUser({
-              username: currUser?.username,
-              email: currUser?.email,
+              username: currUser.username,
+              email: currUser.email,
               password: evt.target.value,
             })
           }
         />
       </Box>
       <Box p="3">
-        <Button
-          colorScheme="pink"
-          size="lg"
-          onClick={() => {
-            createUser(currUser.email, currUser.password);
-          }}
-        >
+        <Button colorScheme="pink" size="lg" onClick={createUser}>
           Sign Up
         </Button>
       </Box>
