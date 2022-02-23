@@ -63,6 +63,7 @@ const signup = () => {
           placeholder="Password"
           value={currUser.password}
           width="15%"
+					type="password"
           onChange={(evt) =>
             setCurrUser({
               username: currUser.username,
