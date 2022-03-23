@@ -6,7 +6,7 @@ import styles from "../styles/Home.module.css";
 
 export default function Home() {
 	return (
-		<Box bg="black" color="white" w="100%" h="73px">
+		<Box bg="black" color="#D6C8DA" w="100%" h="73px">
 			<Head>
 				<title>Ricetta</title>
 			</Head>
